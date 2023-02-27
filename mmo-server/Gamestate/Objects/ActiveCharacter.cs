@@ -22,6 +22,7 @@ namespace mmo_server.Gamestate
         {
             this.Entity = entity;
             _position = new Vector2( ((float)(Entity.PositionX) / 10), ((float)(Entity.PositionY)) / 10);
+            Destination = _position;
         }
     }
 }
