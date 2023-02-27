@@ -6,7 +6,7 @@ namespace mmo_server.Gamestate {
     class Player {
         public IPEndPoint Ip {get; private set;}
         public uint AccountId { get; private set; }
-        public Character CurrentCharacter { get; set; }
+        public ActiveCharacter CurrentCharacter { get; set; }
 
         public Player(IPEndPoint ip, uint accountId) {
             Ip = ip;

@@ -26,7 +26,7 @@ namespace mmo_server.MessageHandlers {
             if (player == null) {
                 return;
             }
-            Character playerChar = player.CurrentCharacter;
+            ActiveCharacter playerChar = player.CurrentCharacter;
             if (playerChar == null) {
                 return;
             }

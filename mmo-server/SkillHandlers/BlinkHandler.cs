@@ -25,11 +25,11 @@ namespace mmo_server.SkillHandlers {
             skillPublisher.Subscribe("Blink", HandleSkill);
         }
 
-        private void HandleSkill(Skill skill, Character c, Vector2 target) {
+        private void HandleSkill(Skill skill, ActiveCharacter c, Vector2 target) {
             if (unitVerificationService.CanMove(c)) {
                 movementService.Teleport(c, target);
                 cooldownService.StartCooldown(skill, c);
-                broadcastService.DistributeNearby(c, new ServerGroundTargetSkill(skill.Id, c.AccountId, target));
+                broadcastService.DistributeNearby(c, new ServerGroundTargetSkill(skill.Id, c.Entity.AccountId, target));
             }
         }
     }

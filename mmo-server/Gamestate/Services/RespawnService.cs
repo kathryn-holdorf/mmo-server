@@ -24,14 +24,14 @@ namespace mmo_server.Gamestate {
             this.playerService = playerService;
         }
 
-        public void RespawnCharacter(Character c) {
+        public void RespawnCharacter(ActiveCharacter c) {
             if (c.Alive) {
                 return;
             }
             healthService.SetCurrentHealth(c, c.MaxHealth);
             c.Alive = true;
             movementService.Teleport(c, config.characters.RespawnPosition);
-            broadcastService.DistributeNearby(playerService.FindPlayer(c), new UnitRevive(c.AccountId));
+            broadcastService.DistributeNearby(playerService.FindPlayer(c), new UnitRevive(c.Entity.AccountId));
         }
     }
 }

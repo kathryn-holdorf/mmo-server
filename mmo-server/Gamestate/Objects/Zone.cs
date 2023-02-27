@@ -11,9 +11,9 @@ namespace mmo_server.Gamestate {
      */
     public class Zone {
         public uint Id { get; private set; }
-        private List<Character> _characters = new List<Character>();
-        public ReadOnlyCollection<Character> Characters {
-            get { return new ReadOnlyCollection<Character>(_characters); }
+        private List<ActiveCharacter> _characters = new List<ActiveCharacter>();
+        public ReadOnlyCollection<ActiveCharacter> Characters {
+            get { return new ReadOnlyCollection<ActiveCharacter>(_characters); }
         }
 
         public Zone(uint id) {
@@ -21,7 +21,7 @@ namespace mmo_server.Gamestate {
         }
         
         ///<summary>Try to add a character. Max number of characters in a zone is ushort.MaxValue.</summary>
-        public bool AddCharacter(Character p) {
+        public bool AddCharacter(ActiveCharacter p) {
             if (_characters.Count == ushort.MaxValue) {
                 return false;
             }
@@ -29,7 +29,7 @@ namespace mmo_server.Gamestate {
             return true;
         }
 
-        public void RemoveCharacter(Character c) {
+        public void RemoveCharacter(ActiveCharacter c) {
             _characters.Remove(c);
         }
     }

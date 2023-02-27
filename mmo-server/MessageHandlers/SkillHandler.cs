@@ -32,7 +32,7 @@ namespace mmo_server.MessageHandlers {
         }
 
         private void HandleNoTarget(Message message, IPEndPoint source) {
-            if (!VerifyMessage(message, source, out Character c)) {
+            if (!VerifyMessage(message, source, out ActiveCharacter c)) {
                 return;
             }
 
@@ -45,7 +45,7 @@ namespace mmo_server.MessageHandlers {
         }
 
         private void HandleGroundTarget(Message message, IPEndPoint source) {
-            if (!VerifyMessage(message, source, out Character c)) {
+            if (!VerifyMessage(message, source, out ActiveCharacter c)) {
                 return;
             }
 
@@ -58,7 +58,7 @@ namespace mmo_server.MessageHandlers {
         }
 
         private void HandleUnitTarget(Message message, IPEndPoint source) {
-            if (!VerifyMessage(message, source, out Character c)) {
+            if (!VerifyMessage(message, source, out ActiveCharacter c)) {
                 return;
             }
 
@@ -70,7 +70,7 @@ namespace mmo_server.MessageHandlers {
             skillPublisher.Publish(skill, c, null, skillUse.Target);
         }
 
-        private bool VerifyMessage(Message message, IPEndPoint source, out Character c) {
+        private bool VerifyMessage(Message message, IPEndPoint source, out ActiveCharacter c) {
             c = null;
             Player player = playerService.FindPlayer(source);
             if (player == null) {
@@ -86,7 +86,7 @@ namespace mmo_server.MessageHandlers {
             return true;
         }
 
-        private bool VerifySkill(uint skillId, out Skill skill, Character c) {
+        private bool VerifySkill(uint skillId, out Skill skill, ActiveCharacter c) {
             if (skillId >= SkillData.skills.Length) {
                 skill = null;
                 return false;

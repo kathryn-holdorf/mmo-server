@@ -37,14 +37,14 @@ namespace mmo_server.MessageHandlers {
             if (player == null) {
                 return;
             }
-            Character c = player.CurrentCharacter;
+            ActiveCharacter c = player.CurrentCharacter;
             if (c == null) {
                 return;
             }
             movementService.StartMovingCharacter(c, move.Target);
             interruptService.InterruptAttack(c);
-            PositionUpdate pos = new PositionUpdate(c.AccountId, c.Position, move.Target, c.Velocity);
-            broadcastService.DistributeInZone(zoneService.Zones[c.ZoneId], pos);
+            PositionUpdate pos = new PositionUpdate(c.Entity.AccountId, c.Position, move.Target, c.Velocity);
+            broadcastService.DistributeInZone(zoneService.Zones[c.Entity.ZoneId], pos);
         }
     }
 }

@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace mmo_server.Gamestate {
     class CharacterLoginService {
-        public delegate void HandleLogin(Character c);
+        public delegate void HandleLogin(ActiveCharacter c);
         public event HandleLogin CharacterLoggedIn = delegate { };
         public event HandleLogin CharacterLoggedOut = delegate { };
 
@@ -37,9 +37,9 @@ namespace mmo_server.Gamestate {
         /// Assign the player's current character, assing the character to a zone, and broadcast the character's arrival.
         /// </summary>
         /// <returns>true if the operation succeeded, false otherwise</returns>
-        public bool LoginCharacter(Character c) {
-            Player p = players.ByAccountId[c.AccountId];
-            Zone zone = zones.Zones[c.ZoneId];
+        public bool LoginCharacter(ActiveCharacter c) {
+            Player p = players.ByAccountId[c.Entity.AccountId];
+            Zone zone = zones.Zones[c.Entity.ZoneId];
             if (zone.AddCharacter(c)) {
                 p.CurrentCharacter = c;
                 CharacterLoggedIn(c);
@@ -49,17 +49,17 @@ namespace mmo_server.Gamestate {
             return false;
         }
 
-        public void LogoutCharacter(Character c) {
-            Player p = players.ByAccountId[c.AccountId];
-            Zone playerZone = zones.Zones[c.ZoneId];
+        public void LogoutCharacter(ActiveCharacter c) {
+            Player p = players.ByAccountId[c.Entity.AccountId];
+            Zone playerZone = zones.Zones[c.Entity.ZoneId];
             playerZone.RemoveCharacter(c);
             CharacterLoggedOut(c);
-            broadCastService.DistributeNearby(c, new ServerDisconnect(c.AccountId));
+            broadCastService.DistributeNearby(c, new ServerDisconnect(c.Entity.AccountId));
             p.CurrentCharacter = null;
         }
 
-        private void BroadcastCharacterArrival(Character arrivedCharacter) {
-            Zone zone = zones.Zones[arrivedCharacter.ZoneId];
+        private void BroadcastCharacterArrival(ActiveCharacter arrivedCharacter) {
+            Zone zone = zones.Zones[arrivedCharacter.Entity.ZoneId];
             CharInfo arrivedCharSpotted = Converter.CreateCharInfo(arrivedCharacter);
             broadCastService.DistributeInZone(zone, arrivedCharSpotted);
         }

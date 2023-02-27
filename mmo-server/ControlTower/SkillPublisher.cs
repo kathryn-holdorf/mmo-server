@@ -8,15 +8,15 @@ using System.Threading.Tasks;
 
 namespace mmo_server.ControlTower {
     class SkillPublisher {
-        public delegate void HandleNoTargetSkill(Skill skill, Character source);
-        public delegate void HandleGroundTargetSkill(Skill skill, Character source, Vector2 target);
-        public delegate void HandleUnitTargetSkill(Skill skill, Character source, uint target);
+        public delegate void HandleNoTargetSkill(Skill skill, ActiveCharacter source);
+        public delegate void HandleGroundTargetSkill(Skill skill, ActiveCharacter source, Vector2 target);
+        public delegate void HandleUnitTargetSkill(Skill skill, ActiveCharacter source, uint target);
 
         private Dictionary<string, List<HandleNoTargetSkill>> noTargetHandlers = new Dictionary<string, List<HandleNoTargetSkill>>();
         private Dictionary<string, List<HandleGroundTargetSkill>> groundTargetHandlers = new Dictionary<string, List<HandleGroundTargetSkill>>();
         private Dictionary<string, List<HandleUnitTargetSkill>> unitTargetHandlers = new Dictionary<string, List<HandleUnitTargetSkill>>();
 
-        public void Publish(Skill skill, Character source, Vector2? groundTarget, uint? unitTarget) {
+        public void Publish(Skill skill, ActiveCharacter source, Vector2? groundTarget, uint? unitTarget) {
             if (groundTarget.HasValue && groundTargetHandlers.ContainsKey(skill.CodeName)) {
                 foreach (var handler in groundTargetHandlers[skill.CodeName]) {
                     handler.Invoke(skill, source, groundTarget.Value);

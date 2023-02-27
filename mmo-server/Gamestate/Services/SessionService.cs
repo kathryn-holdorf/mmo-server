@@ -93,7 +93,7 @@ namespace mmo_server.Gamestate {
         }
 
         private void Disconnect(Player p) {
-            Character c = p.CurrentCharacter;
+            ActiveCharacter c = p.CurrentCharacter;
             if (c != null) {
                 characterLoginService.LogoutCharacter(c);
             }

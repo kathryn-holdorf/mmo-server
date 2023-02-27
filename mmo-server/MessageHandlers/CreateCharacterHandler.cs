@@ -35,7 +35,7 @@ namespace mmo_server.MessageHandlers {
                 return;
             }
 
-            CreateCharacterResponse.Types response = characterCreationService.CreateCharacter(player, create, out Character newCharacter);
+            CreateCharacterResponse.Types response = characterCreationService.CreateCharacter(player, create, out ActiveCharacter newCharacter);
             CharSlotInfo info = charSelectService.GetCharSlotInfo(newCharacter);
             messageSender.SendTo(source, new CreateCharacterResponse() { Response = (byte)response, CharInfo = info });
 

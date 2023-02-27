@@ -28,8 +28,8 @@ namespace mmo_server.MessageHandlers {
             if (!playerService.ByIP.ContainsKey(source) || !playerService.ByAccountId.ContainsKey(auto.TargetPlayerId)) {
                 return;
             }
-            Character sourceChar = playerService.ByIP[source].CurrentCharacter;
-            Character targetChar = playerService.ByAccountId[auto.TargetPlayerId].CurrentCharacter;
+            ActiveCharacter sourceChar = playerService.ByIP[source].CurrentCharacter;
+            ActiveCharacter targetChar = playerService.ByAccountId[auto.TargetPlayerId].CurrentCharacter;
             if (sourceChar == null || targetChar == null) {
                 return;
             }

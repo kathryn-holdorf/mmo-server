@@ -33,15 +33,15 @@ namespace mmo_server.SkillHandlers {
             skillPublisher.Subscribe("Pew", HandleSkill);
         }
 
-        private void HandleSkill(Skill skill, Character source, Vector2 target) {
+        private void HandleSkill(Skill skill, ActiveCharacter source, Vector2 target) {
             movementService.StopMoving(source);
             CircleCollider projectileCollider = projectileService.Spawn(source.Position, target, projectileVelocity, projectileCollisionRadius, range);
 
             collisionService.Subscribe(
                 projectileCollider,
                 (CircleCollider other) => {
-                    if (other.Parent is Character) {
-                        Character unit = other.Parent as Character;
+                    if (other.Parent is ActiveCharacter) {
+                        ActiveCharacter unit = other.Parent as ActiveCharacter;
                         if (unit.Alive && unit != source) {
                             projectileService.Destroy(projectileCollider);
                             healthService.ChangeCurrentHealth(unit, damage * -1);
@@ -49,7 +49,7 @@ namespace mmo_server.SkillHandlers {
                     }
                 });
 
-            broadcastService.DistributeNearby(source, new ServerGroundTargetSkill(skill.Id, source.AccountId, target));
+            broadcastService.DistributeNearby(source, new ServerGroundTargetSkill(skill.Id, source.Entity.AccountId, target));
         }
 
     }

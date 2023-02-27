@@ -23,8 +23,8 @@ namespace mmo_server.Gamestate {
             this.config = config;
 
             gameLoop.Tick += Update;
-            characterLoginService.CharacterLoggedIn += (Character c) => { AddCollider(new CircleCollider(config.characters.baseRadius, c)); };
-            characterLoginService.CharacterLoggedOut += (Character c) => { RemoveCollider(colliders[c]); };
+            characterLoginService.CharacterLoggedIn += (ActiveCharacter c) => { AddCollider(new CircleCollider(config.characters.baseRadius, c)); };
+            characterLoginService.CharacterLoggedOut += (ActiveCharacter c) => { RemoveCollider(colliders[c]); };
         }
 
         private void Update(float elapsedTime) {

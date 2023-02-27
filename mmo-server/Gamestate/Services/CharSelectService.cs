@@ -11,7 +11,8 @@ using System.Threading.Tasks;
 using mmo_server.Persistence;
 using mmo_shared;
 
-namespace mmo_server.Gamestate {
+namespace mmo_server.Gamestate
+{
     class CharSelectService {
         private readonly Database db;
         private readonly PlayerService players;
@@ -39,7 +40,7 @@ namespace mmo_server.Gamestate {
                 charInfoArray = new CharSlotInfo[charIds.Count];
                 for (int i = 0; i < charIds.Count; i++) {
                     if (db.GetCharacter(charIds[i], out Character character)) {
-                        CharSlotInfo info = new CharSlotInfo(character.Name, character.Level, character.ClassId, character.ZoneId, character.SlotId);
+                        CharSlotInfo info = new CharSlotInfo(character.Name, character.Level, character.Class, character.ZoneId, character.Slot);
                         charInfoArray[i] = info;
                     } else {
                         Debug.Debug.Log("Could not retrieve characters: " + login.Username, Debug.Debug.MessageTypes.Login);
@@ -51,8 +52,8 @@ namespace mmo_server.Gamestate {
             }
         }
 
-        public CharSlotInfo GetCharSlotInfo(Character c) {
-            return new CharSlotInfo(c.Name, c.Level, c.ClassId, c.ZoneId, c.SlotId);
+        public CharSlotInfo GetCharSlotInfo(ActiveCharacter c) {
+            return new CharSlotInfo(c.Entity.Name, c.Entity.Level, c.Entity.Class, c.Entity.ZoneId, c.Entity.Slot);
         }
 
     }

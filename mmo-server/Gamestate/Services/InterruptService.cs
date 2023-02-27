@@ -12,7 +12,7 @@ namespace mmo_server.Gamestate {
         private readonly PlayerService playerService;
         private readonly MovementService movementService;
 
-        public delegate void InterruptHandler(Character c);
+        public delegate void InterruptHandler(ActiveCharacter c);
         public event InterruptHandler AttackInterrupt = delegate { };
         public event InterruptHandler MovementInterrupt = delegate { };
 
@@ -22,12 +22,12 @@ namespace mmo_server.Gamestate {
             this.movementService = movementService;
         }
 
-        public void InterruptAttack(Character c) {
+        public void InterruptAttack(ActiveCharacter c) {
             AttackInterrupt(c);
-            broadcastService.DistributeNearby(playerService.FindPlayer(c), new InterruptAttack(c.AccountId));
+            broadcastService.DistributeNearby(playerService.FindPlayer(c), new InterruptAttack(c.Entity.AccountId));
         }
 
-        public void InterruptMovement(Character c) {
+        public void InterruptMovement(ActiveCharacter c) {
             MovementInterrupt(c);
             movementService.StopMoving(c);
         }

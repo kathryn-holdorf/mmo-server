@@ -20,11 +20,11 @@ namespace mmo_server.Gamestate {
             this.interruptService = interruptService;
         }
 
-        public void ChangeCurrentHealth(Character c, float change) {
+        public void ChangeCurrentHealth(ActiveCharacter c, float change) {
             SetCurrentHealth(c, c.CurrentHealth + change);
         }
 
-        public void SetCurrentHealth(Character c, float newHealth) {
+        public void SetCurrentHealth(ActiveCharacter c, float newHealth) {
             if (newHealth > c.MaxHealth) {
                 newHealth = c.MaxHealth;
             }
@@ -32,15 +32,15 @@ namespace mmo_server.Gamestate {
             if (c.CurrentHealth <= 0) {
                 Die(c);
             }
-            broadCastService.DistributeInZone(zoneService.Zones[c.ZoneId], new HealthChange(c.AccountId, c.CurrentHealth));
+            broadCastService.DistributeInZone(zoneService.Zones[c.Entity.ZoneId], new HealthChange(c.Entity.AccountId, c.CurrentHealth));
         }
 
-        public void Die(Character c) {
+        public void Die(ActiveCharacter c) {
             c.CurrentHealth = 0;
             c.Alive = false;
             interruptService.InterruptAttack(c);
             interruptService.InterruptMovement(c);
-            broadCastService.DistributeInZone(zoneService.Zones[c.ZoneId], new UnitDie(c.AccountId));
+            broadCastService.DistributeInZone(zoneService.Zones[c.Entity.ZoneId], new UnitDie(c.Entity.AccountId));
         }
     }
 }

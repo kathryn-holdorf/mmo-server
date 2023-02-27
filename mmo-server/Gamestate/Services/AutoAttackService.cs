@@ -15,7 +15,7 @@ namespace mmo_server.Gamestate {
     class AutoAttackService{
 
         class AutoAttackStatus {
-            public Character Target { get; set; }
+            public ActiveCharacter Target { get; set; }
             public float WindupRemaining { get; set; }
             public float CooldownRemaining { get; set; }
             public bool InWindup { get; set; }
@@ -30,7 +30,7 @@ namespace mmo_server.Gamestate {
         private readonly ZoneService zoneService;
         private readonly InterruptService interruptService;
         private readonly HealthService healthService;
-        private readonly Dictionary<Character, AutoAttackStatus> activeAutoAttacks = new Dictionary<Character, AutoAttackStatus>();
+        private readonly Dictionary<ActiveCharacter, AutoAttackStatus> activeAutoAttacks = new Dictionary<ActiveCharacter, AutoAttackStatus>();
 
         public AutoAttackService(GameLoop gameLoop, Config config, UnitVerificationService unitStateService, PlayerService players,
             MovementService playerMover, BroadcastService broadcast, ZoneService zoneRegistry, InterruptService interruptService,
@@ -53,13 +53,13 @@ namespace mmo_server.Gamestate {
         /// If the attack command is valid, source will start attacking target, until the attack is interrupted.
         /// If the target is out of range, the attacking unit will start moving towards it.
         /// </summary>
-        public void StartAttacking(Character source, Character target) {
+        public void StartAttacking(ActiveCharacter source, ActiveCharacter target) {
             if (!VerifyAttackCommand(source, target)) {
                 return;
             }
 
-            var broadcast = new ServerAutoAttack(source.AccountId, target.AccountId);
-            broadcastService.DistributeInZone(zoneService.Zones[source.ZoneId], broadcast);
+            var broadcast = new ServerAutoAttack(source.Entity.AccountId, target.Entity.AccountId);
+            broadcastService.DistributeInZone(zoneService.Zones[source.Entity.ZoneId], broadcast);
 
             float cooldownRemaining = 0;
             if (activeAutoAttacks.ContainsKey(source)) {
@@ -73,7 +73,7 @@ namespace mmo_server.Gamestate {
             activeAutoAttacks[source] = auto;
         }
 
-        public void StopAttacking(Character source) {
+        public void StopAttacking(ActiveCharacter source) {
             if (activeAutoAttacks.ContainsKey(source)) {
                 activeAutoAttacks[source].WindupRemaining = config.characters.baseAttackWindup;
                 activeAutoAttacks[source].InWindup = false;
@@ -82,12 +82,12 @@ namespace mmo_server.Gamestate {
         }
 
         private void Update(float elapsedTime) {
-            List<Character> removeList = new List<Character>();
+            List<ActiveCharacter> removeList = new List<ActiveCharacter>();
 
-            foreach (Character source in activeAutoAttacks.Keys) {
+            foreach (ActiveCharacter source in activeAutoAttacks.Keys) {
                 AutoAttackStatus auto = activeAutoAttacks[source];
                 bool hasTarget = (auto.Target != null) && unitStateService.LoggedIn(auto.Target)
-                    && auto.Target.Alive && source.ZoneId == auto.Target.ZoneId;
+                    && auto.Target.Alive && source.Entity.ZoneId == auto.Target.Entity.ZoneId;
 
                 if (auto.CooldownRemaining > 0) {
                     //case 1: attack is cooling down. if we have a target, move into range.
@@ -122,19 +122,19 @@ namespace mmo_server.Gamestate {
                 }
             }
 
-            foreach (Character remove in removeList) {
+            foreach (ActiveCharacter remove in removeList) {
                 activeAutoAttacks.Remove(remove);
             }
         }
 
-        private bool VerifyAttackCommand(Character source, Character target) {
-            if (!playerService.ByAccountId.ContainsKey(source.AccountId) || !playerService.ByAccountId.ContainsKey(target.AccountId)) {
+        private bool VerifyAttackCommand(ActiveCharacter source, ActiveCharacter target) {
+            if (!playerService.ByAccountId.ContainsKey(source.Entity.AccountId) || !playerService.ByAccountId.ContainsKey(target.Entity.AccountId)) {
                 return false;
             }
             if (source == null || target == null) {
                 return false;
             }
-            if (source.ZoneId != target.ZoneId) {
+            if (source.Entity.ZoneId != target.Entity.ZoneId) {
                 return false;
             }
             if (source == target) {
@@ -150,7 +150,7 @@ namespace mmo_server.Gamestate {
         }
         
         /// <returns>true if character is already in range, else return false.</returns>
-        private bool GetInRange(Character source, AutoAttackStatus auto) {
+        private bool GetInRange(ActiveCharacter source, AutoAttackStatus auto) {
             if (source.AttackRange <= source.Position.Distance(auto.Target.Position)) {
                 movementService.MoveIntoRange(source, auto.Target, source.AttackRange);
                 return false;
@@ -158,7 +158,7 @@ namespace mmo_server.Gamestate {
             return true;
         }
 
-        private bool InRange(Character source, AutoAttackStatus auto) {
+        private bool InRange(ActiveCharacter source, AutoAttackStatus auto) {
             return source.AttackRange <= source.Position.Distance(auto.Target.Position);
         }
     }

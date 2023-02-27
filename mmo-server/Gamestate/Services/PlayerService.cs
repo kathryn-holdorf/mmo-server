@@ -45,9 +45,9 @@ namespace mmo_server.Gamestate {
         }
 
         ///<returns>The owner of the given character, if the player is connected. Else return null</returns>
-        public Player FindPlayer(Character c) {
-            if (_accounts.ContainsKey(c.AccountId)) {
-                Player p = _accounts[c.AccountId];
+        public Player FindPlayer(ActiveCharacter c) {
+            if (_accounts.ContainsKey(c.Entity.AccountId)) {
+                Player p = _accounts[c.Entity.AccountId];
                 return p;
             }
             return null;

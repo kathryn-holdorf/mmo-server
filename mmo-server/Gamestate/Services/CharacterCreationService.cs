@@ -11,7 +11,8 @@ using mmo_server.Persistence;
 using mmo_shared;
 using mmo_shared.Messages;
 
-namespace mmo_server.Gamestate {
+namespace mmo_server.Gamestate
+{
     class CharacterCreationService {
         private Database db;
         private Config config;
@@ -24,9 +25,14 @@ namespace mmo_server.Gamestate {
         /// <summary>
         /// Create a new character, if the character creation parameters are valid.
         /// </summary>
-        public CreateCharacterResponse.Types CreateCharacter(Player player, CreateCharacter create, out Character newCharacter) {
+        public CreateCharacterResponse.Types CreateCharacter(Player player, CreateCharacter create, out ActiveCharacter newCharacter) {
             CreateCharacterResponse.Types response = CreateCharacterResponse.Types.Invalid;
             newCharacter = null;
+
+            if (db.GetCharacter(player.AccountId, create.Slot, out Character existingCharacter))
+            {
+                return response;
+            }
 
             if (create.Name.Length < config.accounts.MinCharactersForUsername
                       || create.Name.Length > config.accounts.MaxCharactersForUsername) {
@@ -34,20 +40,20 @@ namespace mmo_server.Gamestate {
             }
 
             Vector2 spawnPoint = config.characters.StartingPosition;
-            Character character = new Character(
-                player.AccountId,
-                create.Name,
-                11, 1,
-                spawnPoint, spawnPoint,
-                0f,
-                config.characters.StartingZone,
-                create.Slot,
-                1000, 1000,
-                config.characters.baseAttackRange,
-                config.characters.baseAttackCooldown,
-                true);
+            var entity = new Character()
+            {
+                Name = create.Name,
+                AccountId = player.AccountId,
+                Class = 11,
+                Level = 1,
+                PositionX = (ushort)spawnPoint.X,
+                PositionY = (ushort)spawnPoint.Y,
+                ZoneId = config.characters.StartingZone,
+                Slot = create.Slot
+            };
+            ActiveCharacter character = Converter.CreateDefaultCharacter(entity, config);
 
-            if (db.Save(character)) {
+            if (db.Save(character.Entity)) {
                 newCharacter = character;
                 response = CreateCharacterResponse.Types.Success;
             }

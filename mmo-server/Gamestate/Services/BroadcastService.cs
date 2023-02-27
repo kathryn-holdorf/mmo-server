@@ -38,19 +38,19 @@ namespace mmo_server.Gamestate {
         }
 
         public void DistributeInZone(Zone zone, Message message) {
-            foreach (Character c in zone.Characters) {
+            foreach (ActiveCharacter c in zone.Characters) {
                 Player recipient = playerService.FindPlayer(c);
                 messageSender.SendTo(recipient.Ip, message);
             }
         }
 
-        public void DistributeNearby(Character c, Message message) {
+        public void DistributeNearby(ActiveCharacter c, Message message) {
             Player p = playerService.FindPlayer(c);
             DistributeNearby(p, message);
         }
 
         public void DistributeNearby(Player sender, Message message) {
-            Zone zone = zoneRegistry.Zones[sender.CurrentCharacter.ZoneId];
+            Zone zone = zoneRegistry.Zones[sender.CurrentCharacter.Entity.ZoneId];
             DistributeInZone(zone, message);
         }
     }

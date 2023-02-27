@@ -12,7 +12,7 @@ using mmo_server.ControlTower;
 namespace mmo_server.Gamestate {
     class MovementService{
         private class Follow {
-            public Character Target { get; set; }
+            public ActiveCharacter Target { get; set; }
             public float Range { get; set; }
         }
 
@@ -23,7 +23,7 @@ namespace mmo_server.Gamestate {
         private readonly ZoneService zoneService;
         private readonly UnitVerificationService unitStateService;
         private float timeSinceLastFrame = 0f;
-        private Dictionary<Character, Follow> followers = new Dictionary<Character, Follow>();
+        private Dictionary<ActiveCharacter, Follow> followers = new Dictionary<ActiveCharacter, Follow>();
         private List<SimpleProjectile> projectiles = new List<SimpleProjectile>();
 
         public MovementService(PlayerService playerService, Config config, GameLoop gameLoop,
@@ -37,7 +37,7 @@ namespace mmo_server.Gamestate {
             gameLoop.Tick += Update;
         }
 
-        public void StartMovingCharacter(Character c, Vector2 target) {
+        public void StartMovingCharacter(ActiveCharacter c, Vector2 target) {
             if (!unitStateService.CanMove(c)) {
                 return;
             }
@@ -49,7 +49,7 @@ namespace mmo_server.Gamestate {
             projectiles.Add(p);
         }
 
-        public void MoveIntoRange(Character subject, Character target, float range) {
+        public void MoveIntoRange(ActiveCharacter subject, ActiveCharacter target, float range) {
             if (!unitStateService.CanMove(subject)) {
                 return;
             }
@@ -58,25 +58,25 @@ namespace mmo_server.Gamestate {
             subject.Velocity = config.characters.baseMovementPerSecond;
         }
 
-        public void StopMoving(Character c) {
+        public void StopMoving(ActiveCharacter c) {
             c.Destination = c.Position;
             c.Velocity = 0f;
             StopFollowing(c);
-            PositionUpdate pos = new PositionUpdate(c.AccountId, c.Position, c.Position, c.Velocity);
-            broadcastService.DistributeInZone(zoneService.Zones[c.ZoneId], pos);
+            PositionUpdate pos = new PositionUpdate(c.Entity.AccountId, c.Position, c.Position, c.Velocity);
+            broadcastService.DistributeInZone(zoneService.Zones[c.Entity.ZoneId], pos);
         }
 
         public void StopMoving(SimpleProjectile p) {
             projectiles.Remove(p);
         }
 
-        public void StopFollowing(Character source) {
+        public void StopFollowing(ActiveCharacter source) {
             if (followers.ContainsKey(source)) {
                 followers.Remove(source);
             }
         }
 
-        public void Teleport(Character c, Vector2 newPosition) {
+        public void Teleport(ActiveCharacter c, Vector2 newPosition) {
             c.Position = newPosition;
             StopMoving(c);
         }
@@ -89,7 +89,7 @@ namespace mmo_server.Gamestate {
 
         private void MovePlayers() {
             foreach (Player p in playerService.ByIP.Values) {
-                Character character = p.CurrentCharacter;
+                ActiveCharacter character = p.CurrentCharacter;
                 if (character == null) {
                     continue;
                 }
@@ -100,8 +100,8 @@ namespace mmo_server.Gamestate {
                         continue;
                     }
                     character.Destination = follow.Target.Position;
-                    PositionUpdate pos = new PositionUpdate(character.AccountId, character.Position, follow.Target.Position, character.Velocity);
-                    broadcastService.DistributeInZone(zoneService.Zones[character.ZoneId], pos);
+                    PositionUpdate pos = new PositionUpdate(character.Entity.AccountId, character.Position, follow.Target.Position, character.Velocity);
+                    broadcastService.DistributeInZone(zoneService.Zones[character.Entity.ZoneId], pos);
                 }
                 if (character.Destination != character.Position) {
                     float step = character.Velocity * (timeSinceLastFrame / 1000);

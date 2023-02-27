@@ -37,12 +37,12 @@ namespace mmo_server.Gamestate {
             zones.Add(zone.Id, zone);
         }
 
-        public void SendSurroundingsToPlayer(Character playerCharacter, uint zoneId) {
+        public void SendSurroundingsToPlayer(ActiveCharacter playerCharacter, uint zoneId) {
             Zone zone = zones[zoneId];
             for (int i = 0; i < zone.Characters.Count; i++) {
-                Character otherCharacter = zone.Characters[i];
+                ActiveCharacter otherCharacter = zone.Characters[i];
                 CharInfo charInfo = Converter.CreateCharInfo(otherCharacter);
-                messageSender.SendTo(playerService.ByAccountId[playerCharacter.AccountId].Ip, charInfo);
+                messageSender.SendTo(playerService.ByAccountId[playerCharacter.Entity.AccountId].Ip, charInfo);
             }
         }
     }

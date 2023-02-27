@@ -68,7 +68,7 @@ namespace mmo_server.ServerStart {
             CreateCharacterHandler createCharacter = new CreateCharacterHandler(packetPublisher, characterCreation, playerService, messageSender,
                 charSelectService);
             LoginCharacterHandler loginCharacter = new LoginCharacterHandler(packetPublisher, characterLoginService, playerService, db, messageSender,
-                zoneService);
+                zoneService, config);
             MoveCommandHandler moveCommand = new MoveCommandHandler(playerService, zoneService, broadcast, interrupt, packetPublisher, movementService,
                 unitVerificationService);
             SessionHandler session = new SessionHandler(packetPublisher, sessionService, messageSender);

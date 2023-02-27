@@ -19,12 +19,12 @@ namespace mmo_server.Gamestate {
         }
 
         public void Say(Player sender, ClientChatMessage message) {
-            Character playerCharacter = sender.CurrentCharacter;
+            ActiveCharacter playerCharacter = sender.CurrentCharacter;
             if (playerCharacter == null) {
                 return;
             }
-            Zone playerZone = zones.Zones[playerCharacter.ZoneId];
-            broadcastService.DistributeInZone(playerZone, new ServerChatMessage(message.Text, playerCharacter.AccountId));
+            Zone playerZone = zones.Zones[playerCharacter.Entity.ZoneId];
+            broadcastService.DistributeInZone(playerZone, new ServerChatMessage(message.Text, playerCharacter.Entity.AccountId));
         }
     }
 }

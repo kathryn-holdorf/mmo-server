@@ -15,20 +15,20 @@ namespace mmo_server.Gamestate {
             this.playerService = playerService;
         }
 
-        public bool LoggedIn(Character c) {
+        public bool LoggedIn(ActiveCharacter c) {
             Player p = playerService.FindPlayer(c);
             return (p != null && p.CurrentCharacter == c);
         }
 
-        public bool CanAttack(Character c) {
+        public bool CanAttack(ActiveCharacter c) {
             return LoggedIn(c) && c.Alive;
         }
 
-        public bool CanMove(Character c) {
+        public bool CanMove(ActiveCharacter c) {
             return LoggedIn(c) && c.Alive;
         }
 
-        public bool CanUseSkills(Character c) {
+        public bool CanUseSkills(ActiveCharacter c) {
             return LoggedIn(c) && c.Alive;
         }
 

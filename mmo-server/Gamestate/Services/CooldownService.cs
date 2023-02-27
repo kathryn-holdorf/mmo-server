@@ -10,28 +10,28 @@ namespace mmo_server.Gamestate {
     class CooldownService {
         private readonly GameLoop gameLoop;
 
-        private Dictionary<Character, Dictionary<Skill, float>> activeCooldowns = new Dictionary<Character, Dictionary<Skill, float>>();
+        private Dictionary<ActiveCharacter, Dictionary<Skill, float>> activeCooldowns = new Dictionary<ActiveCharacter, Dictionary<Skill, float>>();
 
         public CooldownService(GameLoop gameLoop) {
             this.gameLoop = gameLoop;
             gameLoop.Tick += Update;
         }
 
-        public void StartCooldown(Skill skill, Character c) {
+        public void StartCooldown(Skill skill, ActiveCharacter c) {
             if (!activeCooldowns.ContainsKey(c)) {
                 activeCooldowns[c] = new Dictionary<Skill, float>();
             }
             activeCooldowns[c][skill] = skill.Cooldown;
         }
 
-        public bool OnCooldown(Skill skill, Character c) {
+        public bool OnCooldown(Skill skill, ActiveCharacter c) {
             return activeCooldowns.ContainsKey(c) && activeCooldowns[c].ContainsKey(skill);
         }
 
         private void Update(float elapsedMs) {
-            Dictionary<Character, List<Skill>> remove = new Dictionary<Character, List<Skill>>();
+            Dictionary<ActiveCharacter, List<Skill>> remove = new Dictionary<ActiveCharacter, List<Skill>>();
 
-            foreach (Character c in activeCooldowns.Keys) {
+            foreach (ActiveCharacter c in activeCooldowns.Keys) {
                 foreach(Skill skill in activeCooldowns[c].Keys.ToList()) {
                     activeCooldowns[c][skill] = Math.Max(0, activeCooldowns[c][skill] - elapsedMs / 1000);
 
@@ -44,7 +44,7 @@ namespace mmo_server.Gamestate {
                 }
             }
 
-            foreach(Character c in remove.Keys) {
+            foreach(ActiveCharacter c in remove.Keys) {
                 foreach(Skill skill in remove[c]) {
                     activeCooldowns[c].Remove(skill);
                 }
