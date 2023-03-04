@@ -22,13 +22,12 @@ namespace mmo_server.Communication {
             this.serializer = serializer;
             this.encryption = encryption;
             this.publisher = publisher;
-            Start();
         }
 
         /// <summary>
         /// Starts listening to received packets from the <see cref="ClientConnector"/>
         /// </summary>
-        private void Start() {
+        public void Start() {
             clients.PacketReceived += OnPacketReceived;
         }
 

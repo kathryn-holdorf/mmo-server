@@ -21,6 +21,7 @@
     </PackageReference>
     <PackageReference Include="MySql.Data" Version="8.0.32" />
     <PackageReference Include="MySql.EntityFrameworkCore" Version="7.0.0" />
+    <PackageReference Include="SimpleInjector" Version="5.4.1" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
   </ItemGroup>
 </Project>

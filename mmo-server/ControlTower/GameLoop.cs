@@ -10,7 +10,7 @@ namespace mmo_server.ControlTower {
         private Config config;
 
         public delegate void TickHandler(float elapsedMilliseconds);
-        public event TickHandler Tick;
+        public event TickHandler Tick = delegate { };
 
         public GameLoop(PacketPublisher packetPublisher, Config config) {
             this.packetPublisher = packetPublisher;

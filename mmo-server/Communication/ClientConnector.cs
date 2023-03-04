@@ -9,14 +9,12 @@ namespace mmo_server.Communication {
     public class ClientConnector{
         private const int SERVER_PORT = 2057;
 
-        UdpClient udpServer = new UdpClient(SERVER_PORT);
+        UdpClient udpServer;
 
         public delegate void ReceivePacket(byte[] packet, IPEndPoint source);
         public event ReceivePacket PacketReceived = delegate { };
 
         public ClientConnector() {
-            IgnoreClosedConnections();
-            Start();
         }
 
         //prevent SocketException when a client disconnects
@@ -27,7 +25,9 @@ namespace mmo_server.Communication {
             udpServer.Client.IOControl((int)SIO_UDP_CONNRESET, new byte[] { Convert.ToByte(false) }, null);
         }
 
-        private void Start() {
+        public void Start() {
+            udpServer = new UdpClient(SERVER_PORT);
+            IgnoreClosedConnections();
             Thread receiverThread = new Thread(Receive);
             receiverThread.Start();
             Debug.Debug.Log("Accepting packets", Debug.Debug.MessageTypes.Default);
