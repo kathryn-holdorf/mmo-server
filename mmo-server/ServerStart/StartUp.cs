@@ -23,7 +23,7 @@ namespace mmo_server.ServerStart {
             container.RegisterSingleton<PacketPublisher>();
             container.RegisterSingleton<Serializer>();
             container.RegisterSingleton<MessageSender>();
-            container.RegisterSingleton<PacketReceiver>();
+            container.RegisterSingleton<PacketHandler>();
             container.RegisterSingleton<SkillPublisher>();
             container.RegisterSingleton<PlayerService>();
             container.RegisterSingleton<ZoneService>();
@@ -67,7 +67,7 @@ namespace mmo_server.ServerStart {
 
             //server start
             container.GetInstance<ClientConnector>().Start();
-            container.GetInstance<PacketReceiver>().Start();
+            container.GetInstance<PacketHandler>().Start();
             container.GetInstance<GameLoop>().Start();
         }
     }

@@ -9,14 +9,14 @@ namespace mmo_server.Communication;
 /// <summary>
 /// Receives packets from <see cref="ClientConnector"/>, and decides which packets should be published (made available to the game layer).
 /// </summary>
-class PacketReceiver {
+class PacketHandler {
 
     private ClientConnector clients;
     private Serializer serializer;
     private PacketEncryption encryption;
     private readonly PacketPublisher publisher;
 
-    public PacketReceiver(ClientConnector clients, Serializer serializer, PacketEncryption encryption,
+    public PacketHandler(ClientConnector clients, Serializer serializer, PacketEncryption encryption,
         PacketPublisher publisher) {
         this.clients = clients;
         this.serializer = serializer;
