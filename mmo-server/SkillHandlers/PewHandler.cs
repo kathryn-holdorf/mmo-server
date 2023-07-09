@@ -34,7 +34,6 @@ namespace mmo_server.SkillHandlers {
         }
 
         private void HandleSkill(Skill skill, ActiveCharacter source, Vector2 target) {
-            movementService.StopMoving(source);
             CircleCollider projectileCollider = projectileService.Spawn(source.Position, target, projectileVelocity, projectileCollisionRadius, range);
 
             collisionService.Subscribe(
